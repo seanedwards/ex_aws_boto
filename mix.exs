@@ -31,7 +31,7 @@ defmodule ExAwsBoto.MixProject do
       {:configparser_ex, "~> 2.0"},
       {:ex_aws, "~> 2.1"},
       {:floki, "~> 0.25"},
-      {:botocore, github: "boto/botocore", compile: false, app: false, runtime: false, optional: true}
+      {:botocore, github: "boto/botocore", compile: false, app: false, runtime: false, only: [:dev, :test]}
     ]
   end
 
