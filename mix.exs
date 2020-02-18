@@ -9,6 +9,7 @@ defmodule ExAwsBoto.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       package: package(),
+      docs: docs(),
       description: "Generate ExAws clients from Botocore JSON specs",
     ]
   end
@@ -42,6 +43,13 @@ defmodule ExAwsBoto.MixProject do
       links: %{
         github: "https://github.com/seanedwards/ex_aws_boto"
       }
+    ]
+  end
+
+  defp docs do
+    [
+      main: "ExAws.Boto",
+      extras: ["README.md"]
     ]
   end
 end
