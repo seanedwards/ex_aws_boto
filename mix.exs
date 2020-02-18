@@ -8,11 +8,8 @@ defmodule ExAwsBoto.MixProject do
       elixir: "~> 1.10",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
+      package: package(),
       description: "Generate ExAws clients from Botocore JSON specs",
-      licenses: ["MIT"],
-      links: %{
-        github: "https://github.com/seanedwards/ex_aws_boto"
-      }
     ]
   end
 
@@ -34,7 +31,17 @@ defmodule ExAwsBoto.MixProject do
       {:configparser_ex, "~> 2.0"},
       {:ex_aws, "~> 2.1"},
       {:floki, "~> 0.25"},
-      {:botocore, github: "boto/botocore", compile: false, app: false, runtime: false}
+      {:botocore, github: "boto/botocore", compile: false, app: false, runtime: false, optional: true}
+    ]
+  end
+
+  defp package do
+    [
+      licenses: ["MIT"],
+      maintainers: ["Sean Edwards <stedwards87+hex@gmail.com>"],
+      links: %{
+        github: "https://github.com/seanedwards/ex_aws_boto"
+      }
     ]
   end
 end

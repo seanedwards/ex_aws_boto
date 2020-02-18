@@ -22,7 +22,8 @@ by adding `ex_aws_boto` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:ex_aws_boto, "~> 0.1.0"}
+    {:ex_aws_boto, "~> 0.1.0"},
+    {:botocore, github: "boto/botocore", compile: false, app: false, runtime: false}
   ]
 end
 ```
