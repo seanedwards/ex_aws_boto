@@ -1,6 +1,18 @@
 # ExAwsBoto
 
-**TODO: Add description**
+Generate ExAws clients from Botocore JSON specs
+
+For example:
+
+```elixir
+iex> ExAws.Boto.load(iam: "2010-05-08")
+:ok
+
+iex> ExAws.IAM.Api.list_users |> ExAws.IAM.Client.request!()
+[
+  # possibly a lot of users...
+]
+```
 
 ## Installation
 

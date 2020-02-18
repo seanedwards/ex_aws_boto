@@ -7,7 +7,12 @@ defmodule ExAwsBoto.MixProject do
       version: "0.1.0",
       elixir: "~> 1.10",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      description: "Generate ExAws clients from Botocore JSON specs",
+      licenses: ["MIT"],
+      links: %{
+        github: "https://github.com/seanedwards/ex_aws_boto"
+      }
     ]
   end
 
