@@ -17,7 +17,7 @@ defmodule ExAwsBoto.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: [:logger, :mojito]
     ]
   end
 
@@ -26,13 +26,12 @@ defmodule ExAwsBoto.MixProject do
     [
       {:ex_doc, "~> 0.19", only: :dev, runtime: false},
       {:dialyxir, "~> 1.0.0-rc.6", only: :dev, runtime: false},
-      {:mojito, "~> 0.6"},
       {:jason, "~> 1.1"},
       {:sweet_xml, "~> 0.6"},
-      {:configparser_ex, "~> 2.0"},
       {:ex_aws, "~> 2.1"},
       {:floki, "~> 0.25"},
-      {:botocore, github: "boto/botocore", compile: false, app: false, runtime: false, only: [:dev, :test]}
+      {:botocore, github: "boto/botocore", compile: false, app: false, runtime: false, optional: true, only: [:dev, :test]},
+      {:mojito, "~> 0.6", optional: true, only: [:dev, :test]}
     ]
   end
 
