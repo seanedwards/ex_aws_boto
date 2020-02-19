@@ -1,6 +1,8 @@
 # ExAws.Boto
 
-Generate ExAws clients from Botocore JSON specs
+Generate ExAws clients from Botocore JSON specs.
+
+Work in progress, definitely has bugs. Try it out, but wait for `1.x` before using it in production.
 
 For example:
 
