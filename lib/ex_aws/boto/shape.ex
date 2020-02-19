@@ -1,25 +1,21 @@
 defmodule ExAws.Boto.Shape.Structure do
   @moduledoc false
   defstruct [:name, :module, :required, :members, :documentation, :metadata]
-  @enforce_keys [:module, :members]
 end
 
 defmodule ExAws.Boto.Shape.List do
   @moduledoc false
   defstruct [:name, :module, :member_name, :member, :documentation, :metadata, min: nil, max: nil]
-  @enforce_keys [:module, :member]
 end
 
 defmodule ExAws.Boto.Shape.Map do
   @moduledoc false
   defstruct [:name, :module, :key_module, :value_module, :documentation, :metadata]
-  @enforce_keys [:module, :member]
 end
 
 defmodule ExAws.Boto.Shape.Basic do
   @moduledoc false
   defstruct [:name, :module, :type, :documentation, :def, :metadata]
-  @enforce_keys [:module]
 end
 
 defmodule ExAws.Boto.Shape do
@@ -103,7 +99,6 @@ defmodule ExAws.Boto.Shape do
         %ExAws.Boto.Shape.List{
           module: module,
           member: member_module,
-          member_name: member_name,
           documentation: docs
         } = shape_spec
       )
@@ -175,7 +170,6 @@ defmodule ExAws.Boto.Shape do
 
   def generate_module(
         %ExAws.Boto.Shape.Basic{
-          type: shape_type,
           module: module,
           documentation: docs
         } = shape_spec

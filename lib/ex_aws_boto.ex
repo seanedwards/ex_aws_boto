@@ -19,7 +19,7 @@ defmodule ExAws.Boto do
       iex> ExAws.IAM.Api.list_users |> ExAws.IAM.Client.request()
       {:ok, [ ... ]}
   """
-  @spec load(Keyword.t()) :: :ok
+  @spec load(Keyword.t()) :: Macro.t()
   defmacro load(slugs) do
     slugs
     |> Enum.map(fn {service_atom, api_version} ->
@@ -116,16 +116,6 @@ defmodule ExAws.Boto do
     :ok
   end
 
-  defp compile_module(quoted) do
-    Kernel.ParallelCompiler.async(fn ->
-      quoted
-      |> Code.compile_quoted()
-      |> Enum.map(fn {module, _binary} ->
-        Code.ensure_loaded(module)
-      end)
-    end)
-  end
-
   defp generate_api_mod(
          %{
            "version" => _version,
@@ -162,8 +152,6 @@ defmodule ExAws.Boto do
              %{
                "serviceId" => service_id
              } = _metadata,
-           "operations" => operations,
-           "shapes" => shapes,
            "pagination" => pagination
          } = service_json
        ) do

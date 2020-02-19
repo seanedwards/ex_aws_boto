@@ -21,8 +21,6 @@ defmodule ExAws.Boto.Operation do
     :client_mod
   ]
 
-  @enforce_keys [:name, :module, :protocol, :method]
-
   def from_service_json(
         %{
           "metadata" => %{"serviceId" => service_id, "protocol" => protocol} = service_meta,
@@ -116,12 +114,10 @@ defmodule ExAws.Boto.Operation do
           module: op_mod,
           method: op_name,
           input: input_type,
-          output: output_type
         } = op_spec
       )
       when op_mod != nil and input_type != nil do
     input_spec = generate_type_spec(input_type)
-    output_spec = generate_type_spec(output_type)
 
     quote do
       @doc unquote(generate_docs(op_spec))

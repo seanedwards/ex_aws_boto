@@ -1,7 +1,6 @@
 defmodule ExAws.Boto.Protocol.Query do
   require Logger
-  alias ExAws.Boto.Util, as: Util
-  import SweetXml, only: [sigil_x: 2, transform_by: 2]
+  import SweetXml, only: [sigil_x: 2]
 
   @doc """
   Converts an `ExAws.Boto.Operation`, which describes an API method invocation in terms of `ExAws.Boto`
@@ -58,7 +57,6 @@ defmodule ExAws.Boto.Protocol.Query do
   """
   def parse_response(operation, {:ok, %{body: xml}}) do
     %ExAws.Boto.Operation{
-      name: op_name_str,
       output: output_mod,
       output_wrapper: wrapper
     } = operation.__struct__.op_spec()

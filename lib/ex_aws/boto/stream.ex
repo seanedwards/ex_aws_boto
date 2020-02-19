@@ -11,7 +11,7 @@ defmodule ExAws.Boto.Stream do
            "input_token" => input_token,
            "output_token" => output_token,
            "result_key" => result_key
-         } = pagination}
+         } = _pagination}
       ) do
     op_mod = Util.module_name(service_id, op_name_str)
     input_token = Util.key_to_atom(input_token)
