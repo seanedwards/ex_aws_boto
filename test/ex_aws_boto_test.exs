@@ -80,55 +80,57 @@ defmodule ExAws.Boto.QueryTest do
 
   ExAws.Boto.generate_client(@sample_spec)
 
-  test "parses operations" do
-    op_spec = ExAws.UnitTest.UnitTestOperation.op_spec()
+  describe "ExAws.Boto" do
+    test "parses operations" do
+      op_spec = ExAws.UnitTest.UnitTestOperation.op_spec()
 
-    assert op_spec ==
-             %ExAws.Boto.Operation{
-               api_mod: ExAws.UnitTest.Api,
-               client_mod: ExAws.UnitTest.Client,
-               documentation: "Does a unit test",
-               errors: [ExAws.UnitTest.NoSuchUnitTestException],
-               examples: [@example],
-               http: %{"method" => "POST", "requestUri" => "/"},
-               input: ExAws.UnitTest.UnitTestOperationRequest,
-               metadata: @metadata,
-               method: :unit_test_operation,
-               module: ExAws.UnitTest.UnitTestOperation,
-               name: "UnitTestOperation",
-               output: ExAws.UnitTest.UnitTestOperationResponse,
-               output_wrapper: "UnitTestOperationResult",
-               protocol: ExAws.Boto.Protocol.Query
-             }
-  end
+      assert op_spec ==
+              %ExAws.Boto.Operation{
+                api_mod: ExAws.UnitTest.Api,
+                client_mod: ExAws.UnitTest.Client,
+                documentation: "Does a unit test",
+                errors: [ExAws.UnitTest.NoSuchUnitTestException],
+                examples: [@example],
+                http: %{"method" => "POST", "requestUri" => "/"},
+                input: ExAws.UnitTest.UnitTestOperationRequest,
+                metadata: @metadata,
+                method: :unit_test_operation,
+                module: ExAws.UnitTest.UnitTestOperation,
+                name: "UnitTestOperation",
+                output: ExAws.UnitTest.UnitTestOperationResponse,
+                output_wrapper: "UnitTestOperationResult",
+                protocol: ExAws.Boto.Protocol.Query
+              }
+    end
 
-  test "produces request objects" do
-    request = ExAws.UnitTest.Api.unit_test_operation(unit_test: "some test")
+    test "produces request objects" do
+      request = ExAws.UnitTest.Api.unit_test_operation(unit_test: "some test")
 
-    assert request == %ExAws.UnitTest.UnitTestOperation{
-             input: %ExAws.UnitTest.UnitTestOperationRequest{
-               unit_test: "some test"
-             }
-           }
-  end
+      assert request == %ExAws.UnitTest.UnitTestOperation{
+              input: %ExAws.UnitTest.UnitTestOperationRequest{
+                unit_test: "some test"
+              }
+            }
+    end
 
-  test "parses response objects" do
-    request = ExAws.UnitTest.Api.unit_test_operation(unit_test: "some test")
+    test "parses response objects" do
+      request = ExAws.UnitTest.Api.unit_test_operation(unit_test: "some test")
 
-    # Just pretend we do an ExAws request here
+      # Just pretend we do an ExAws request here
 
-    xml = """
-    <UnitTestOperationResponse>
-      <UnitTestOperationResult>
-        <TestResult>true</TestResult>
-      </UnitTestOperationResult>
-    </UnitTestOperationResponse>
-    """
+      xml = """
+      <UnitTestOperationResponse>
+        <UnitTestOperationResult>
+          <TestResult>true</TestResult>
+        </UnitTestOperationResult>
+      </UnitTestOperationResponse>
+      """
 
-    {:ok, response} = ExAws.Boto.Operation.parse_response(request, {:ok, %{body: xml}})
+      {:ok, response} = ExAws.Boto.Operation.parse_response(request, {:ok, %{body: xml}})
 
-    assert response == %ExAws.UnitTest.UnitTestOperationResponse{
-             test_result: true
-           }
+      assert response == %ExAws.UnitTest.UnitTestOperationResponse{
+              test_result: true
+            }
+    end
   end
 end

@@ -2,12 +2,15 @@ defmodule ExAws.Boto.Protocol.Query do
   require Logger
   import SweetXml, only: [sigil_x: 2]
 
+  @behaviour ExAws.Boto.Protocol
+
   @doc """
   Converts an `ExAws.Boto.Operation`, which describes an API method invocation in terms of `ExAws.Boto`
   into an `ExAws.Operation.Query`, which describes an HTTP request. This method is also responsible for
   converting the input object into something that an AWS query strings based API can understand.
   """
-  def from_op(operation) do
+  @impl true
+  def make_operation(operation) do
     %ExAws.Boto.Operation{
       name: op_name_str,
       input: input_mod,
@@ -55,6 +58,7 @@ defmodule ExAws.Boto.Protocol.Query do
   @doc """
   Parses an ExAWS response into an `ExAws.Boto` object.
   """
+  @impl true
   def parse_response(operation, {:ok, %{body: xml}}) do
     %ExAws.Boto.Operation{
       output: output_mod,

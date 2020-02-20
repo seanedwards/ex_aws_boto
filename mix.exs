@@ -11,6 +11,9 @@ defmodule ExAwsBoto.MixProject do
       package: package(),
       docs: docs(),
       description: "Generate ExAws clients from Botocore JSON specs",
+      elixirc_options: [
+        warnings_as_errors: true
+      ]
     ]
   end
 
