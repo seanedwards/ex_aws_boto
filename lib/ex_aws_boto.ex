@@ -91,9 +91,9 @@ defmodule ExAws.Boto do
     |> Enum.each(&load_slug/1)
   end
 
+  @deps_path Mix.Project.deps_path()
   defp load_slug(slug) when is_binary(slug) do
-    botocore_path = Mix.Project.deps_paths() |> Map.get(:botocore)
-    base_dir = "#{botocore_path}/botocore/data/#{slug}"
+    base_dir = "#{@deps_path}/botocore/data/#{slug}"
 
     %{
       "metadata" => %{

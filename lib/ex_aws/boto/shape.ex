@@ -21,17 +21,17 @@ end
 defmodule ExAws.Boto.Shape do
   @moduledoc false
 
-  @type shape ::
+  @type t ::
           %ExAws.Boto.Shape.Structure{}
           | %ExAws.Boto.Shape.List{}
           | %ExAws.Boto.Shape.Basic{}
 
-  @callback shape_spec() :: shape()
+  @callback shape_spec() :: t()
 
   require Logger
   alias ExAws.Boto.Util, as: Util
 
-  @spec generate_module(shape()) :: Macro.t()
+  @spec generate_module(t()) :: Macro.t()
   def generate_module(
         %ExAws.Boto.Shape.Structure{
           module: module,
@@ -194,7 +194,7 @@ defmodule ExAws.Boto.Shape do
     end
   end
 
-  @spec from_service_json(map(), String.t(), map()) :: shape()
+  @spec from_service_json(map(), String.t(), map()) :: t()
   def from_service_json(
         %{"metadata" => %{"serviceId" => service_id} = service_meta},
         name,
