@@ -1,0 +1,21 @@
+name: Build and Test
+on: [push]
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        otp: [20.3, 21.3, 22.2]
+        elixir: [1.8, 1.9, 1.10]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-elixir@v1
+        with:
+          otp-version: ${{matrix.otp}}
+          elixir-version: ${{matrix.elixir}}
+      - run: mix deps.get
+      - run: mix compile
+      - run: mix test
+
+

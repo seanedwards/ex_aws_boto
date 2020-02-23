@@ -1,5 +1,4 @@
 defmodule ExAws.Boto do
-  require Logger
   require ExAws.Boto.Util
 
   alias ExAws.Boto.Util, as: Util
@@ -49,22 +48,17 @@ defmodule ExAws.Boto do
     # Code.put_compiler_option(:tracers, [ExAws.Boto.Debug.CompileTracer])
 
     shapes_map
-    |> Enum.each(fn {name, spec} ->
+    |> Enum.each(fn {name, _spec} ->
       service_json
-      |> Shape.from_service_json(name, spec)
-      |> Shape.generate_module()
-      |> Code.compile_quoted(name)
+      |> Shape.from_service_json(name)
     end)
 
     operations_specs =
       operations_map
-      |> Enum.map(fn {_redundant_name, spec} ->
-        Task.async(fn ->
-          service_json
-          |> Operation.from_service_json(spec)
-        end)
+      |> Enum.map(fn {_name, spec} ->
+        service_json
+        |> Operation.from_service_json(spec)
       end)
-      |> Enum.map(&Task.await(&1, 30_000))
 
     operations_specs
     |> Enum.each(fn op_spec ->
@@ -78,12 +72,6 @@ defmodule ExAws.Boto do
     service_json
     |> generate_api_mod(operations_specs)
     |> Code.compile_quoted(api_mod |> inspect())
-
-    client_mod = Util.module_name(service_id, "Client")
-
-    service_json
-    |> generate_client_mod()
-    |> Code.compile_quoted(client_mod |> inspect())
   end
 
   defp load_slugs(slugs) when is_list(slugs) do
@@ -93,7 +81,7 @@ defmodule ExAws.Boto do
 
   @deps_path Mix.Project.deps_path()
   defp load_slug(slug) when is_binary(slug) do
-    base_dir = "#{@deps_path}/botocore/data/#{slug}"
+    base_dir = "#{@deps_path}/botocore/botocore/data/#{slug}"
 
     %{
       "metadata" => %{
@@ -141,50 +129,6 @@ defmodule ExAws.Boto do
           operations
           |> Enum.map(&Operation.generate_operation/1)
         )
-      end
-    end
-  end
-
-  defp generate_client_mod(
-         %{
-           "version" => _version,
-           "metadata" =>
-             %{
-               "serviceId" => service_id
-             } = _metadata,
-           "pagination" => pagination
-         } = service_json
-       ) do
-    client_mod = Util.module_name(service_id, "Client")
-
-    quote do
-      defmodule unquote(client_mod) do
-        @spec stream(struct()) :: Enumerable.t()
-        def stream(request, extra_config \\ [])
-
-        unquote_splicing(
-          pagination
-          |> Enum.map(fn pagination ->
-            ExAws.Boto.Stream.generate_paginator(service_json, pagination)
-          end)
-        )
-
-        def stream(_, _) do
-          raise "Stream not implemented"
-        end
-
-        def request(input, extra_config \\ []) do
-          operation = ExAws.Boto.Operation.make_operation(input)
-          response = ExAws.request(operation, extra_config)
-          ExAws.Boto.Operation.parse_response(input, response)
-        end
-
-        def request!(input, extra_config \\ []) do
-          case request(input, extra_config) do
-            {:ok, response} -> response
-            {:error, e} -> throw(e)
-          end
-        end
       end
     end
   end

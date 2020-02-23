@@ -51,7 +51,10 @@ defmodule ExAws.Boto.Protocol.Query do
         {"Action", op_name_str},
         {"Version", version}
         | params
-      ]
+      ],
+      parser: fn result, _action, _config ->
+        parse_response(operation, result)
+      end
     }
   end
 

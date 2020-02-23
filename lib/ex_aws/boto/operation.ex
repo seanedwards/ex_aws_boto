@@ -1,6 +1,7 @@
 defmodule ExAws.Boto.Operation do
   @moduledoc false
   alias ExAws.Boto.Util, as: Util
+  alias ExAws.Boto.Shape
 
   @callback op_spec() :: %ExAws.Boto.Operation{}
 
@@ -73,10 +74,12 @@ defmodule ExAws.Boto.Operation do
   end
 
   alias ExAws.Boto.Util, as: Util
-  require Logger
 
+  @doc """
+  Converts an AWS API operation struct into one suitable for ExAws to use directly.
+  """
   def make_operation(op) do
-    op.__struct__.op_spec().protocol.from_op(op)
+    op.__struct__.op_spec().protocol.make_operation(op)
   end
 
   def parse_response(op, response) do
@@ -117,7 +120,7 @@ defmodule ExAws.Boto.Operation do
         } = op_spec
       )
       when op_mod != nil and input_type != nil do
-    input_spec = generate_type_spec(input_type)
+    input_spec =Shape.generate_type_spec(input_type)
 
     quote do
       @doc unquote(generate_docs(op_spec))
@@ -128,6 +131,7 @@ defmodule ExAws.Boto.Operation do
         %unquote(op_mod){
           input: unquote(input_type).new(input)
         }
+        |> ExAws.Boto.Operation.make_operation()
       end
     end
   end
@@ -145,91 +149,11 @@ defmodule ExAws.Boto.Operation do
       @spec unquote(op_name)() :: %unquote(op_mod){}
       def unquote(op_name)() do
         %unquote(op_mod){}
+        |> ExAws.Boto.Operation.make_operation()
       end
     end
   end
 
-  def generate_type_spec(nil) do
-    quote do: nil
-  end
-
-  def generate_type_spec(atom) when is_atom(atom) do
-    generate_type_spec(atom.shape_spec())
-  end
-
-  def generate_type_spec(%ExAws.Boto.Shape.Structure{
-        module: module,
-        members: members,
-        required: required
-      }) do
-    quote do
-      %unquote(module){
-        unquote_splicing(
-          members
-          |> Enum.map(fn {attr, {_name, module}} ->
-            cond do
-              Enum.member?(required, attr) ->
-                {attr, generate_type_spec(module.shape_spec())}
-
-              true ->
-                {attr,
-                 quote do
-                   nil | unquote(generate_type_spec(module.shape_spec()))
-                 end}
-            end
-          end)
-        )
-      }
-    end
-  end
-
-  def generate_type_spec(%ExAws.Boto.Shape.List{
-        member: member
-      }) do
-    quote do
-      [unquote(generate_type_spec(member.shape_spec()))]
-    end
-  end
-
-  def generate_type_spec(%ExAws.Boto.Shape.Map{
-        key_module: key_module,
-        value_module: value_module
-      }) do
-    quote do
-      %{
-        optional(unquote(generate_type_spec(key_module))) =>
-          unquote(generate_type_spec(value_module))
-      }
-    end
-  end
-
-  def generate_type_spec(%ExAws.Boto.Shape.Basic{type: "string"}) do
-    quote do: String.t()
-  end
-
-  def generate_type_spec(%ExAws.Boto.Shape.Basic{type: "timestamp"}) do
-    quote do: String.t()
-  end
-
-  def generate_type_spec(%ExAws.Boto.Shape.Basic{type: "integer"}) do
-    quote do: integer()
-  end
-
-  def generate_type_spec(%ExAws.Boto.Shape.Basic{type: "long"}) do
-    quote do: integer()
-  end
-
-  def generate_type_spec(%ExAws.Boto.Shape.Basic{type: "boolean"}) do
-    quote do: true | false
-  end
-
-  def generate_type_spec(%ExAws.Boto.Shape.Basic{type: "blob"}) do
-    quote do: binary()
-  end
-
-  def generate_type_spec(_) do
-    quote do: any()
-  end
 
   defp generate_docs(
          %ExAws.Boto.Operation{
@@ -288,7 +212,7 @@ defmodule ExAws.Boto.Operation do
     """
     ## Returns
 
-        #{generate_type_spec(output_mod) |> codify() |> String.replace("\n", "\n    ")}
+        #{Shape.generate_type_spec(output_mod) |> codify() |> String.replace("\n", "\n    ")}
 
     """
   end

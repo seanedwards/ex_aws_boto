@@ -7,6 +7,18 @@ defmodule ExAws.Boto.Protocol do
     {:ok, struct() | nil} |
     {:error, term()}
 
-  @callback make_operation(operation :: struct()) :: struct()
-  @callback parse_response(operation :: struct(), http_reply) :: boto_reply
+  @callback perform(struct()) :: boto_reply()
+
+  defstruct operation: nil
+
+  defimpl ExAws.Operation do
+    def perform(%ExAws.Boto.Protocol{operation: operation}, config) do
+      operation.__struct__.op_spec().protocol.perform(operation, config)
+    end
+
+
+    def stream!(operation, _) do
+      operation.__struct__.stream(operation)
+    end
+  end
 end

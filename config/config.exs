@@ -7,4 +7,5 @@ config :mojito,
   ]
 
 config :ex_aws,
-  http_client: ExAws.Mojito
+  http_client: ExAws.Mojito,
+  json_codec: Jason
